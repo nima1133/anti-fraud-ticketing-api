@@ -1,0 +1,75 @@
+
+generator client {
+  provider = "prisma-client"
+  output   = "../src/generated/prisma"
+}
+
+datasource db {
+  provider = "postgresql"
+  }
+
+model User {
+  id Int @id @default(autoincrement())
+  name String
+  email String @unique
+  // phoneNumber String @unique
+  password String
+  role Role  @default(USER)
+  active Boolean @default(true)
+  createdAt DateTime @default(now())
+  event Event[]
+  booking Booking[]
+  refreshToken RefreshToken[]
+}
+enum Role {
+  ADMIN
+  USER
+}
+model Event {
+  id  Int @id @default(autoincrement())
+  title String  @unique
+  description String
+  location  String
+  date  DateTime
+  capacity  Int
+  sold Int @default(0)
+  createdAt DateTime @default(now())
+
+  createdById Int
+  createdBy User @relation(fields: [createdById] , references: [id] )
+
+  booking Booking[]
+}
+model Booking {
+  id  Int @id @default(autoincrement())
+
+  status BookingStatus @default(AVAILABLE)
+  quantity  Int 
+
+  userId Int
+  eventId Int
+
+  user  User  @relation( fields: [userId] , references: [id])
+  event Event @relation( fields: [eventId] , references: [id])
+
+  createdAt DateTime   @default(now())
+    @@unique([userId, eventId])
+
+}
+enum BookingStatus {
+  AVAILABLE
+  CONFIRMED
+}
+
+
+model RefreshToken {
+  id String @id @default(cuid())
+  refreshToken String  @unique
+  expiresAt DateTime 
+  revokedAt DateTime?
+
+  userId Int
+  user User @relation( fields : [userId] , references: [id] ,onDelete: Cascade)
+
+   createdAt DateTime @default(now())
+}
