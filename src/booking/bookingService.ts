@@ -1,4 +1,7 @@
 import { prisma } from '../../lib/prisma';
+import { FraudService } from '../fraud/fraudService';
+import { IdempotencyService } from '../idempotency/idempotencyService';
+import { paymentQueue } from '../queues/payment.queue';
 import { ApiFeatures } from '../utils/apiFeatures';
 import { AppError } from '../utils/appError';
 
@@ -6,11 +9,23 @@ export interface createTicketDto {
   userId: number;
   eventId: number;
   quantity: number;
+  idempotencyKey: string;
 }
+const fraudService = new FraudService();
+const idempotencyService = new IdempotencyService();
 export class BookingService {
   //USER
   async reserveTicket(data: createTicketDto) {
-   return  await prisma.$transaction(async (tx) => {
+    return await prisma.$transaction(async (tx) => {
+      const existingBooking = await idempotencyService.checkIdempotency(
+        tx,
+        data,
+      );
+      if (existingBooking) {
+        return existingBooking;
+      }
+      const booking = await fraudService.checkPurchaseLimit(tx, data);
+      await fraudService.checkVelocity(tx, data.userId);
       // 1. Find event
 
       await tx.$queryRaw`
@@ -50,11 +65,38 @@ export class BookingService {
       });
 
       // 5. create booking
-     return await tx.booking.create({
-        data,
+      if (booking) {
+        return await tx.booking.update({
+          where: { id: booking.id },
+          data: {
+            quantity: {
+              increment: data.quantity,
+            },
+          },
+        });
+      }
+
+      const newBooking = await tx.booking.create({
+        data: {
+          userId: data.userId,
+          eventId: data.eventId,
+          quantity: data.quantity,
+          idempotencyKey: data.idempotencyKey,
+          status: 'HOLD',
+        },
       });
+      console.log('1');
+      const job = await paymentQueue.add(
+        'payment-timeout',
+        {
+          bookingId: newBooking.id,
+        },
+        { delay: 10 * 60 * 1000 },
+      );
+      console.log(job.id);
+      return newBooking;
     });
-  } 
+  }
   async deleteReservation(bookingId: number, deletedNumber: number) {
     await prisma.$transaction(async (tx) => {
       await tx.$queryRaw`
@@ -110,21 +152,17 @@ export class BookingService {
   }
 
   //ADMIN
-async getAllTickets(eventId: number, query: any) {
-  const options = new ApiFeatures(query)
-    .filter()
-    .sort()
-    .paginate()
-    .build();
+  async getAllTickets(eventId: number, query: any) {
+    const options = new ApiFeatures(query).filter().sort().paginate().build();
 
-  return await prisma.booking.findMany({
-    ...options,
-    where: {
-      eventId,
-      ...options.where,
-    },
-  });
-}
+    return await prisma.booking.findMany({
+      ...options,
+      where: {
+        eventId,
+        ...options.where,
+      },
+    });
+  }
   async getTicket(bookingId: number) {
     return await prisma.booking.findUnique({
       where: {

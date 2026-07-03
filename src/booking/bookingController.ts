@@ -3,7 +3,6 @@ import { AppError } from '../utils/appError';
 import asyncHandler from '../utils/asyncHandler';
 import { BookingService } from './bookingService';
 import { Request, Response, NextFunction } from 'express';
-import { z } from 'zod';
 import { reserveTicketInput, paramsInput } from '../schemas/booking.schema';
 
 const booking = new BookingService();
@@ -19,9 +18,11 @@ export const reserveTicket = asyncHandler(
       userId: req.user.id,
       eventId: params.eventId,
       quantity: data.quantity,
+      idempotencyKey : data.idempotencyKey
     });
     res.status(201).json({
       status: 'success',
+      message : 'please pay for yout ticket !!!',
       data: newReserve,
     });
   },

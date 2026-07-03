@@ -1,11 +1,10 @@
-
-
 import express from 'express';
 import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 import hpp from 'hpp';
 
+import paymentRouter from './payment/paymentRoute';
 import userRouter from './user/userRoutes';
 import authRouter from './auth/authRoutes';
 import eventRouter from './event/eventRoute';
@@ -23,7 +22,7 @@ app.use(
     message: {
       message: 'Too many requests. Please try again later.',
     },
-  })
+  }),
 );
 
 app.use(hpp());
@@ -36,6 +35,7 @@ app.use('/api/v1/user', userRouter);
 app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/event', eventRouter);
 app.use('/api/v1/book', reserveRouter);
+app.use('/api/v1/payment', paymentRouter);
 
 app.use(errorHandler);
 

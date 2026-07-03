@@ -4,6 +4,7 @@
   "main": "dist/server.js",
   "scripts": {
     "dev": "tsx watch src/server.ts",
+    "worker": "tsx watch src/workers/payment.worker.ts",
     "start": "node dist/server.js",
     "build": "tsc",
     "prisma:generate": "prisma generate",
@@ -13,6 +14,7 @@
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.0.0",
     "bcrypt": "^6.0.0",
+    "bullmq": "^5.79.2",
     "compression": "^1.8.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
@@ -22,6 +24,7 @@
     "express-rate-limit": "^8.5.2",
     "helmet": "^8.2.0",
     "hpp": "^0.2.3",
+    "ioredis": "^5.11.1",
     "jsonwebtoken": "^9.0.3",
     "pg": "^8.21.0",
     "prisma": "^7.0.0",

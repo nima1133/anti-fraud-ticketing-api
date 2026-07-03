@@ -6,7 +6,7 @@ export const authLimiter = (windowMs : number , max : number ) => {
   windowMs,
   max,
   message: {
-    message: 'Too many login attempts.',
+    message: 'Too many attempts.',
   },
 })
 };

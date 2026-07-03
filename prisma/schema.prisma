@@ -14,7 +14,7 @@ model User {
   email String @unique
   // phoneNumber String @unique
   password String
-  role Role  @default(USER)
+  role Role  @default(ADMIN)
   active Boolean @default(true)
   createdAt DateTime @default(now())
   event Event[]
@@ -44,6 +44,8 @@ model Booking {
   id  Int @id @default(autoincrement())
 
   status BookingStatus @default(AVAILABLE)
+
+  idempotencyKey String @unique
   quantity  Int 
 
   userId Int
@@ -58,10 +60,11 @@ model Booking {
 }
 enum BookingStatus {
   AVAILABLE
-  CONFIRMED
+    HOLD
+    CONFIRMED
+    EXPIRED
+    CANCELLED
 }
-
-
 model RefreshToken {
   id String @id @default(cuid())
   refreshToken String  @unique
