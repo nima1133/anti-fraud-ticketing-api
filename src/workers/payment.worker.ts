@@ -1,11 +1,13 @@
 import { Worker } from 'bullmq';
 import { prisma } from '../../lib/prisma';
 import { connection } from '../../lib/redis';
+import { AuditAction } from '../generated/prisma/enums';
+import { AuditService } from '../audit/auditService';
 
+const auditService = new AuditService();
 const worker = new Worker(
   'payment-timeout',
   async (job) => {
-      console.log("Job received:", job.name, job.data);
 
     const { bookingId } = job.data;
     await prisma.$transaction(async (tx) => {
@@ -45,6 +47,12 @@ const worker = new Worker(
             decrement: booking.quantity,
           },
         },
+      });
+      await auditService.log(tx, {
+        action: AuditAction.BOOKING_EXPIRED,
+        userId: booking.userId,
+        entityType: 'BOOKING',
+        entityId: bookingId,
       });
     });
   },

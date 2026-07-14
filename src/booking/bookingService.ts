@@ -1,5 +1,7 @@
 import { prisma } from '../../lib/prisma';
+import { AuditService } from '../audit/auditService';
 import { FraudService } from '../fraud/fraudService';
+import { AuditAction } from '../generated/prisma/enums';
 import { IdempotencyService } from '../idempotency/idempotencyService';
 import { paymentQueue } from '../queues/payment.queue';
 import { ApiFeatures } from '../utils/apiFeatures';
@@ -11,7 +13,9 @@ export interface createTicketDto {
   quantity: number;
   idempotencyKey: string;
 }
+
 const fraudService = new FraudService();
+const auditService = new AuditService();
 const idempotencyService = new IdempotencyService();
 export class BookingService {
   //USER
@@ -85,15 +89,19 @@ export class BookingService {
           status: 'HOLD',
         },
       });
-      console.log('1');
-      const job = await paymentQueue.add(
+      await paymentQueue.add(
         'payment-timeout',
         {
           bookingId: newBooking.id,
         },
         { delay: 10 * 60 * 1000 },
       );
-      console.log(job.id);
+      await auditService.log(tx , {
+        action : AuditAction.BOOKING_CREATED,
+        userId : data.userId,
+        entityType : "BOOKING",
+        entityId : newBooking.id
+      })
       return newBooking;
     });
   }

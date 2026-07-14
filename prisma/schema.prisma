@@ -20,6 +20,7 @@ model User {
   event Event[]
   booking Booking[]
   refreshToken RefreshToken[]
+  auditLogs AuditLog[]
 }
 enum Role {
   ADMIN
@@ -39,6 +40,7 @@ model Event {
   createdBy User @relation(fields: [createdById] , references: [id] )
 
   booking Booking[]
+  
 }
 model Booking {
   id  Int @id @default(autoincrement())
@@ -55,11 +57,13 @@ model Booking {
   event Event @relation( fields: [eventId] , references: [id])
 
   createdAt DateTime   @default(now())
+
+
     @@unique([userId, eventId])
 
 }
 enum BookingStatus {
-  AVAILABLE
+    AVAILABLE
     HOLD
     CONFIRMED
     EXPIRED
@@ -75,4 +79,38 @@ model RefreshToken {
   user User @relation( fields : [userId] , references: [id] ,onDelete: Cascade)
 
    createdAt DateTime @default(now())
+}
+
+model AuditLog {
+id Int @id @default(autoincrement())
+
+action AuditAction
+
+userId Int
+user User @relation(fields: [userId] ,references: [id])
+
+entityType String?
+entityId Int?
+
+createdAt  DateTime    @default(now())
+}
+enum AuditAction {
+  // Authentication
+  USER_REGISTERED
+  USER_LOGGED_IN
+  USER_CHANGE_PASSWORD
+  
+  // Booking
+  BOOKING_CREATED
+  BOOKING_CONFIRMED
+  BOOKING_CANCELLED
+  BOOKING_EXPIRED
+
+
+  // Fraud
+  FRAUD_DETECTED
+}
+enum AuditEntity {
+  BOOKING
+  EVENT
 }

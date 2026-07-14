@@ -9,6 +9,8 @@ import userRouter from './user/userRoutes';
 import authRouter from './auth/authRoutes';
 import eventRouter from './event/eventRoute';
 import reserveRouter from './booking/bookingRoutes';
+import auditRouter from './audit/auditRoute';
+import analyticRouter from './analytics/analyticsRoute';
 import { errorHandler } from './middlewares/errorHandler';
 
 const app = express();
@@ -36,6 +38,8 @@ app.use('/api/v1/auth', authRouter);
 app.use('/api/v1/event', eventRouter);
 app.use('/api/v1/book', reserveRouter);
 app.use('/api/v1/payment', paymentRouter);
+app.use('/api/v1/auidt', auditRouter);
+app.use('/api/v1/analytic', analyticRouter);
 
 app.use(errorHandler);
 

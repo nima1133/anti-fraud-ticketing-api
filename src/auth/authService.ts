@@ -10,10 +10,13 @@ import {
   LoginDto,
   RegisterDto,
 } from '../schemas/auth.schema';
+import { AuditService } from '../audit/auditService';
+import { AuditAction } from '../generated/prisma/enums';
 
 const hashRefreshToken = (token: string) => {
   return crypto.createHash('sha256').update(token).digest('hex');
 };
+const auditService = new AuditService();
 
 export class AuthService {
   async register(data: RegisterDto) {
@@ -41,7 +44,10 @@ export class AuthService {
         password: hashPassword,
       },
     });
-
+    await auditService.log(prisma, {
+      action: AuditAction.USER_REGISTERED,
+      userId: user.id,
+    });
     return {
       id: user.id,
       user: user.name,
@@ -77,7 +83,10 @@ export class AuthService {
         ),
       },
     });
-
+    auditService.log(prisma, {
+      action: AuditAction.USER_LOGGED_IN,
+      userId: user.id,
+    });
     return token;
   }
   async protect(authHeader: string) {
@@ -142,6 +151,10 @@ export class AuthService {
         },
       });
     });
+    auditService.log(prisma , {
+      action : AuditAction.USER_CHANGE_PASSWORD , 
+      userId : userId
+    })
     return {
       message: 'Password changed successfully',
     };
