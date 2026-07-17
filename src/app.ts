@@ -3,14 +3,17 @@ import helmet from 'helmet';
 import cookieParser from 'cookie-parser';
 import rateLimit from 'express-rate-limit';
 import hpp from 'hpp';
+import swaggerUi from "swagger-ui-express";
+import { swaggerSpec } from "./swagger";
 
-import paymentRouter from './payment/paymentRoute';
-import userRouter from './user/userRoutes';
-import authRouter from './auth/authRoutes';
-import eventRouter from './event/eventRoute';
-import reserveRouter from './booking/bookingRoutes';
-import auditRouter from './audit/auditRoute';
-import analyticRouter from './analytics/analyticsRoute';
+
+import paymentRouter from './payment/payment.route';
+import userRouter from './user/user.routes';
+import authRouter from './auth/auth.route';
+import eventRouter from './event/event.route';
+import reserveRouter from './booking/booking.route';
+import auditRouter from './audit/audit.route';
+import analyticRouter from './analytics/analytics.route';
 import { errorHandler } from './middlewares/errorHandler';
 
 const app = express();
@@ -33,13 +36,20 @@ app.use(express.json({ limit: '10kb' }));
 
 app.use(cookieParser());
 
-app.use('/api/v1/user', userRouter);
+
+app.use('/api/v1/users', userRouter);
 app.use('/api/v1/auth', authRouter);
-app.use('/api/v1/event', eventRouter);
-app.use('/api/v1/book', reserveRouter);
-app.use('/api/v1/payment', paymentRouter);
-app.use('/api/v1/auidt', auditRouter);
-app.use('/api/v1/analytic', analyticRouter);
+app.use('/api/v1/events', eventRouter);
+app.use('/api/v1/booking', reserveRouter);
+app.use('/api/v1/payments', paymentRouter);
+app.use('/api/v1/audit', auditRouter);
+app.use('/api/v1/analytics', analyticRouter);
+
+app.use(
+  "/docs",
+  swaggerUi.serve,
+  swaggerUi.setup(swaggerSpec)
+);
 
 app.use(errorHandler);
 

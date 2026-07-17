@@ -2,7 +2,7 @@ import bcrypt from 'bcrypt';
 import { prisma } from './../../lib/prisma';
 import { AppError } from '../utils/appError';
 import createToken from '../utils/tokenMaker';
-import crypto from 'crypto';
+import crypto from "node:crypto";
 import 'dotenv/config';
 import jwt from 'jsonwebtoken';
 import {
@@ -30,7 +30,7 @@ export class AuthService {
         },
       })
     ) {
-      throw new AppError('An account already exists with this email.', 400);
+      throw new AppError('An account already exists with this email.', 409);
     }
     const hashPassword = await bcrypt.hash(
       data.password,

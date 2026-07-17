@@ -8,17 +8,19 @@
     "start": "node dist/server.js",
     "build": "tsc",
     "prisma:generate": "prisma generate",
-    "prisma:migrate": "prisma migrate dev"
+    "prisma:migrate": "prisma migrate dev",
+    "db:seed": "tsx prisma/seed.ts"
+
   },
   "dependencies": {
     "@prisma/adapter-pg": "^7.8.0",
     "@prisma/client": "^7.0.0",
+    "@types/swagger-jsdoc": "^6.0.4",
     "bcrypt": "^6.0.0",
     "bullmq": "^5.79.2",
     "compression": "^1.8.1",
     "cookie-parser": "^1.4.7",
     "cors": "^2.8.6",
-    "crypto": "^1.0.1",
     "dotenv": "^17.2.1",
     "express": "^5.2.1",
     "express-rate-limit": "^8.5.2",
@@ -26,8 +28,9 @@
     "hpp": "^0.2.3",
     "ioredis": "^5.11.1",
     "jsonwebtoken": "^9.0.3",
-    "pg": "^8.21.0",
     "prisma": "^7.0.0",
+    "swagger-jsdoc": "^6.3.0",
+    "swagger-ui-express": "^5.0.1",
     "zod": "^4.4.3"
   },
   "devDependencies": {
@@ -37,7 +40,7 @@
     "@types/hpp": "^0.2.7",
     "@types/jsonwebtoken": "^9.0.10",
     "@types/node": "^24.7.2",
-    "@types/pg": "^8.20.0",
+    "@types/swagger-ui-express": "^4.1.8",
     "tsx": "^4.22.4",
     "typescript": "^5.9.3"
   }

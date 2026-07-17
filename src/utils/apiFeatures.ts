@@ -8,9 +8,11 @@ export class ApiFeatures {
   filter() {
     const queryObj = { ...this.query };
 
-    const excludedFields = ["page", "limit", "sort"];
-
+    const excludedFields = ['page', 'limit', 'sort'];
     excludedFields.forEach((field) => delete queryObj[field]);
+
+    if (queryObj.userId) queryObj.userId = Number(queryObj.userId);
+    if (queryObj.entityId) queryObj.entityId = Number(queryObj.entityId);
 
     this.queryOptions.where = queryObj;
 
@@ -22,13 +24,13 @@ export class ApiFeatures {
 
     const sortBy = String(this.query.sort);
 
-    if (sortBy.startsWith("-")) {
+    if (sortBy.startsWith('-')) {
       this.queryOptions.orderBy = {
-        [sortBy.slice(1)]: "desc",
+        [sortBy.slice(1)]: 'desc',
       };
     } else {
       this.queryOptions.orderBy = {
-        [sortBy]: "asc",
+        [sortBy]: 'asc',
       };
     }
 

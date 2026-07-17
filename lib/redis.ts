@@ -1,6 +1,6 @@
 import { ConnectionOptions } from "bullmq";
 
 export const connection: ConnectionOptions = {
-  host: "localhost",
+  host: "redis",
   port: 6379,
 };
