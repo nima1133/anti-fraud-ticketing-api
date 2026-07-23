@@ -41,3 +41,5 @@ export class AuditService {
     });
   }
 }
+const auditService = new AuditService()
+export default auditService 

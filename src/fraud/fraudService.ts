@@ -32,7 +32,7 @@ export class FraudService {
         entityType: 'EVENT',
         entityId: data.eventId,
       });
-      throw new AppError('Purchase limit exceeded', 400);
+      throw new AppError('Purchase limit exceeded', 409);
     }
 
     return booking;

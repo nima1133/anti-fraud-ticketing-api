@@ -10,8 +10,8 @@ import { AppError } from '../utils/appError';
 export interface createTicketDto {
   userId: number;
   eventId: number;
-  quantity: number;
   idempotencyKey: string;
+  quantity: number;
 }
 
 const fraudService = new FraudService();
@@ -33,11 +33,11 @@ export class BookingService {
       // 1. Find event
 
       await tx.$queryRaw`
-  SELECT id
-  FROM "Event"
-  WHERE id = ${data.eventId}
-  FOR UPDATE
-`;
+        SELECT id
+        FROM "Event"
+        WHERE id = ${data.eventId}
+        FOR UPDATE
+        `;
 
       const event = await tx.event.findUnique({
         where: {
@@ -96,12 +96,12 @@ export class BookingService {
         },
         { delay: 10 * 60 * 1000 },
       );
-      await auditService.log(tx , {
-        action : AuditAction.BOOKING_CREATED,
-        userId : data.userId,
-        entityType : "BOOKING",
-        entityId : newBooking.id
-      })
+      await auditService.log(tx, {
+        action: AuditAction.BOOKING_CREATED,
+        userId: data.userId,
+        entityType: 'BOOKING',
+        entityId: newBooking.id,
+      });
       return newBooking;
     });
   }
