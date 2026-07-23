@@ -25,6 +25,7 @@ const tx = {
     create: jest.fn(),
     findUnique: jest.fn(),
     delete: jest.fn(),
+    findFirst : jest.fn()
   },
 } as any;
 

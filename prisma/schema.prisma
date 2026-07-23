@@ -45,7 +45,7 @@ model Event {
 model Booking {
   id  Int @id @default(autoincrement())
 
-  status BookingStatus @default(AVAILABLE)
+  status BookingStatus 
 
   idempotencyKey String @unique
   quantity  Int 
@@ -58,12 +58,8 @@ model Booking {
 
   createdAt DateTime   @default(now())
 
-
-    @@unique([userId, eventId])
-
 }
 enum BookingStatus {
-    AVAILABLE
     HOLD
     CONFIRMED
     EXPIRED

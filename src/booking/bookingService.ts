@@ -25,8 +25,26 @@ export class BookingService {
         tx,
         data,
       );
+
       if (existingBooking) {
         return existingBooking;
+      }
+
+      const activeBooking = await tx.booking.findFirst({
+        where: {
+          userId: data.userId,
+          eventId: data.eventId,
+          status: {
+            in: ['HOLD', 'CONFIRMED'],
+          },
+        },
+      });
+
+      if (activeBooking) {
+        throw new AppError(
+          'User already has an active booking for this event',
+          409,
+        );
       }
       const booking = await fraudService.checkPurchaseLimit(tx, data);
       await fraudService.checkVelocity(tx, data.userId);
