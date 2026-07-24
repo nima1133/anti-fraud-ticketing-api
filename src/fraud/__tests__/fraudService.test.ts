@@ -10,12 +10,14 @@ const tx = {
   booking: {
     findUnique: jest.fn(),
     count: jest.fn(),
+    findFirst: jest.fn(),
   },
 } as any;
 
 beforeEach(() => {
   jest.clearAllMocks();
 
+  tx.booking.findFirst.mockReset();
   tx.booking.findUnique.mockReset();
   tx.booking.count.mockReset();
   tx.$queryRaw.mockReset();
@@ -26,7 +28,7 @@ beforeEach(() => {
 
 describe('FraudService', () => {
   test('should return null when user has no previous booking', async () => {
-    tx.booking.findUnique.mockResolvedValue(null);
+    tx.booking.findFirst.mockResolvedValue(null);
 
     const result = await fraudService.checkPurchaseLimit(tx, {
       userId: 1,
@@ -35,18 +37,16 @@ describe('FraudService', () => {
       idempotencyKey: '1',
     });
     expect(tx.$queryRaw).toHaveBeenCalled();
-    expect(tx.booking.findUnique).toHaveBeenCalledWith({
+    expect(tx.booking.findFirst).toHaveBeenCalledWith({
       where: {
-        userId_eventId: {
-          userId: 1,
-          eventId: 100,
-        },
+        userId: 1,
+        eventId: 100,
       },
     });
     expect(result).toBeNull();
   });
   test('should allow purchase when total ticket quantity is below the limit', async () => {
-    tx.booking.findUnique.mockResolvedValue({
+    tx.booking.findFirst.mockResolvedValue({
       quantity: 1,
       userId: 1,
       eventId: 2,
@@ -60,12 +60,10 @@ describe('FraudService', () => {
 
     expect(tx.$queryRaw).toHaveBeenCalled();
 
-    expect(tx.booking.findUnique).toHaveBeenCalledWith({
+    expect(tx.booking.findFirst).toHaveBeenCalledWith({
       where: {
-        userId_eventId: {
-          userId: 1,
-          eventId: 2,
-        },
+        userId: 1,
+        eventId: 2,
       },
     });
     expect(result).toEqual({
@@ -75,7 +73,7 @@ describe('FraudService', () => {
     });
   });
   test('should allow purchase when total ticket quantity equals the limit', async () => {
-    tx.booking.findUnique.mockResolvedValue({
+    tx.booking.findFirst.mockResolvedValue({
       quantity: 1,
       userId: 1,
       eventId: 2,
@@ -89,12 +87,10 @@ describe('FraudService', () => {
 
     expect(tx.$queryRaw).toHaveBeenCalled();
 
-    expect(tx.booking.findUnique).toHaveBeenCalledWith({
+    expect(tx.booking.findFirst).toHaveBeenCalledWith({
       where: {
-        userId_eventId: {
-          userId: 1,
-          eventId: 2,
-        },
+        userId: 1,
+        eventId: 2,
       },
     });
     expect(result).toEqual({

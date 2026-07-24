@@ -1,7 +1,6 @@
 import { AuditAction, Prisma } from '../generated/prisma/client';
 import { createTicketDto } from '../booking/bookingService';
 import { AppError } from '../utils/appError';
-import { prisma } from '../../lib/prisma';
 import { AuditService } from '../audit/auditService';
 
 const auditService = new AuditService();
@@ -18,10 +17,9 @@ export class FraudService {
       AND "eventId"=${data.eventId}
       FOR UPDATE`;
 
-    const booking = await tx.booking.findUnique({
-      where: {
-        userId_eventId: { userId: data.userId, eventId: data.eventId },
-      },
+    const booking = await tx.booking.findFirst({
+      where: { userId: data.userId, eventId: data.eventId },
+      
     });
     const currentQuantity = booking?.quantity ?? 0;
     const totalQuantity = currentQuantity + data.quantity;

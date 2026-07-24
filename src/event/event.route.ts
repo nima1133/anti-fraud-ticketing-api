@@ -7,6 +7,7 @@ import {
   updateEvent,
 } from './eventController';
 import { protect } from '../auth/authController';
+import { restrictTo } from '../middlewares/restrictTo';
 const router = Router();
 
 /**
@@ -151,7 +152,7 @@ router.post('/', protect, createEvent);
  *       500:
  *         description: Internal server error
  */
-router.patch('/:id', updateEvent);
+router.patch('/:id', protect, restrictTo('ADMIN'), updateEvent);
 
 /**
  * @swagger
@@ -180,7 +181,7 @@ router.patch('/:id', updateEvent);
  *       500:
  *         description: Internal server error
  */
-router.delete('/:id', deleteEvent);
+router.delete('/:id',protect, restrictTo('ADMIN'), deleteEvent);
 
 /**
  * @swagger

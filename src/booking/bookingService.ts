@@ -185,6 +185,7 @@ export class BookingService {
       ...options,
       where: {
         eventId,
+        status : 'CONFIRMED',
         ...options.where,
       },
     });

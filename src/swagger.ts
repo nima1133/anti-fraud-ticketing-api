@@ -32,7 +32,7 @@ const options: swaggerJsdoc.Options = {
         description: "Ticket reservation endpoints",
       },
       {
-        name: "Payment",
+        name: "Payments",
         description: "Payment endpoints",
       },
       {

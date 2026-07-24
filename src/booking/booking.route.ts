@@ -384,6 +384,6 @@ router.delete('/:bookingId', protect, deleteReservation);
  *       500:
  *         description: Internal server error
  */
-router.get('/user/:bookingId', protect, getTicket);
+router.get('/user/:bookingId', protect, restrictTo('ADMIN'), getTicket);
 
 export default router;
