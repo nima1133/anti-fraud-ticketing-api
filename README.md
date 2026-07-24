@@ -31,7 +31,7 @@ This repository demonstrates backend engineering concepts including transactiona
 ### Clone the repository
 
 ```bash
-git clone https://github.com/<nima1133>/anti-fraud-ticketing-api.git
+git clone https://github.com/nima1133/anti-fraud-ticketing-api.git
 cd anti-fraud-ticketing-api
 ```
 
